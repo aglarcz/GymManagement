@@ -42,13 +42,14 @@ public class DataManager {
 		if (!dfile.exists()) {
 			try {
 				dfile.createNewFile();
+				GymManagement.newFile = true;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
-		if (isDataTransfered()) {
+		if (isDataTransfered(p)) {
 			Bukkit.getServer()
 					.getLogger()
 					.severe(ChatColor.RED
@@ -57,8 +58,10 @@ public class DataManager {
 
 	}
 
-	private boolean isDataTransfered() {
-		File oldFile = new File("/plugins/PixelmonGym/data/badges.dll");
+	private boolean isDataTransfered(Plugin p) {
+		File oldFile = new File(p.getServer().getWorldContainer()
+				.getAbsolutePath()
+				+ "/plugins/PixelmonGym/data/badges.dll");
 
 		if (oldFile.exists()) {
 			InputStream inputStream = null;
@@ -67,6 +70,9 @@ public class DataManager {
 				// read this file into InputStream
 				inputStream = new FileInputStream(oldFile);
 
+				dfile.delete();
+
+				dfile = new File(dataFolder.getPath(), "badges.data");
 				// write the inputStream to a FileOutputStream
 				outputStream = new FileOutputStream(dfile);
 

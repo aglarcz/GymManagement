@@ -1,5 +1,5 @@
 name: GymManagement
-version: 1.2
+version: 1.3
 main: us.hqgaming.gymmanagement.GymManagement
 author: Xeno
 description: 
@@ -23,48 +23,3 @@ permissions:
   badge.give:
     default: op
     description: Allows a player to give others badges
-  gym.flying:
-    default: op
-    description: Flying Gym Leader
-  gym.rock:
-    default: op
-    description: Rock Gym Leader
-  gym.water:
-    default: op
-    description: Water Gym Leader
-  gym.electric:
-    default: op
-    description: Electric Gym Leader
-  gym.grass:
-    default: op
-    description: Grass Gym Leader
-  gym.poison:
-    default: op
-    description: Poison Gym Leader
-  gym.psychic:
-    default: op
-    description: Psychic Gym Leader
-  gym.fire:
-    default: op
-    description: Fire Gym Leader
-  gym.bug:
-    default: op
-    description: Bug Gym Leader
-  gym.normal:
-    default: op
-    description: Normal Gym Leader
-  gym.ghost:
-    default: op
-    description: Ghost Gym Leader
-  gym.fighting:
-    default: op
-    description: Fighting Gym Leader
-  gym.steel:
-    default: op
-    description: Steel Gym Leader
-  gym.ice:
-    default: op
-    description: Ice Gym Leader
-  gym.dragon:
-    default: op
-    description: Dragon Gym Leader

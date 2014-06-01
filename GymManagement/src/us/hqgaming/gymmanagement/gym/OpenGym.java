@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import us.hqgaming.gymmanagement.Chat;
-import us.hqgaming.gymmanagement.Gym;
 import us.hqgaming.gymmanagement.GymManagement;
 import us.hqgaming.gymmanagement.commands.CommandType;
 import us.hqgaming.gymmanagement.commands.PixelmonCommand;

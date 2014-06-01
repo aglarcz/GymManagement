@@ -1,126 +1,23 @@
 Chat-Prefix: "&7[&cHQ&fGaming&7] "
-Server-ID: 1 # 1 = Kanto | 2 = Johto #
-Gym-Slots: 9
+Gym-Slots: 9 # /gyms max slots #
 Gyms:
-   Server-1:
-     Rock:
-       Name: '&7&lRock Gym'
-       Command: 'warp rockgym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
+     Example:
+       Gym-Name: '&7&lExample Gym' # Will be shown on login message and /gyms #
+       Badge-Name: 'Example' # Badge name #
+       On-Item-Click-Command-Name: 'warp example' # Player performs this command on item click in /gyms #
+       Gym-Item: 2 # Gym item id in /gyms #
+       Badge-Item: 21 # Gym item id #
+       Item-Lore: # Item lore list in /gyms #
        - '&cStatus: {STATUS}'
        - '&cLevel Cap: &a10&9-&a20'
        - '&cBadge: &a{BADGE}'
-     Water:
-       Name: '&9&lWater Gym'
-       Command: 'warp watergym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a20&9-&a30'
-       - '&cBadge: &a{BADGE}'
-     Electric:
-       Name: '&6&lElectric Gym'
-       Command: 'warp electricgym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a30&9-&a40'
-       - '&cBadge: &a{BADGE}'
-     Grass:
-       Name: '&a&lGrass Gym'
-       Command: 'warp grassgym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a50&9-&a60'
-       - '&cBadge: &a{BADGE}'
-     Poison:
-       Name: '&9&lPoison Gym'
-       Command: 'warp poisongym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a60&9-&a70'
-       - '&cBadge: &a{BADGE}'
-     Psychic:
-       Name: '&e&lPsychic Gym'
-       Command: 'warp psychicgym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a80&9-&a90'
-       - '&cBadge: &a{BADGE}'
-     Fire:
-       Name: '&c&lFire Gym'
-       Command: 'warp firegym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a90+'
-       - '&cBadge: &a{BADGE}'
-   Server-2:
-     Flying:
-       Name: '&a&lFlying Gym'
-       Command: 'warp flyinggym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
+     Test:
+       Gym-Name: '&a&lTest Gym' # Will be shown on login message and /gyms #
+       Badge-Name: 'Test' # Badge name #
+       On-Item-Click-Command-Name: 'warp testgym' # Player performs this command on item click in /gyms #
+       Gym-Item: 3 # Gym item id in /gyms #
+       Badge-Item: 98 # Gym item id #
+       Item-Lore: # Item lore list in /gyms #
        - '&cStatus: {STATUS}'
        - '&cLevel Cap: &a10&9-&a20'
-       - '&cBadge: &a{BADGE}'
-     Bug:
-       Name: '&2&lBug Gym'
-       Command: 'warp buggym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a20&9-&a30'
-       - '&cBadge: &a{BADGE}'
-     Normal:
-       Name: '&e&lNormal Gym'
-       Command: 'warp normalgym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a30&9-&a40'
-       - '&cBadge: &a{BADGE}'
-     Ghost:
-       Name: '&d&lGhost Gym'
-       Command: 'warp ghostgym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a40&9-&a50'
-       - '&cBadge: &a{BADGE}'
-     Fighting:
-       Name: '&c&lFighting Gym'
-       Command: 'warp flyinggym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a50&9-&a60'
-       - '&cBadge: &a{BADGE}'
-     Steel:
-       Name: '&7&lSteel Gym'
-       Command: 'warp flyinggym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a60&9-&a70'
-       - '&cBadge: &a{BADGE}'
-     Ice:
-       Name: '&3&lIce Gym'
-       Command: 'warp flyinggym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a70&9-&a80'
-       - '&cBadge: &a{BADGE}'
-     Dragon:
-       Name: '&4&lDragon Gym'
-       Command: 'warp flyinggym'
-       Item-ID: 0 # Use 0 for default item
-       Lore:
-       - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a80&9-&a90'
        - '&cBadge: &a{BADGE}'

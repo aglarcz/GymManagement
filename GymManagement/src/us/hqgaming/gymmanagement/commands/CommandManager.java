@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import us.hqgaming.gymmanagement.GymManagement;
-import us.hqgaming.gymmanagement.GymManager;
+import us.hqgaming.gymmanagement.GymMenu;
 
 public class CommandManager implements CommandExecutor {
 
@@ -35,7 +35,7 @@ public class CommandManager implements CommandExecutor {
 
 		} else if (label.equalsIgnoreCase("gyms")) {
 
-			GymManager.showMenu(player);
+			GymMenu.showMenu(player);
 
 		} else if (label.equalsIgnoreCase("badge")) {
 			if (args.length == 0) {

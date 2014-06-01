@@ -5,15 +5,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.hqgaming.gymmanagement.Badge;
-import us.hqgaming.gymmanagement.Gym;
 import us.hqgaming.gymmanagement.GymManagement;
 import us.hqgaming.gymmanagement.commands.CommandType;
 import us.hqgaming.gymmanagement.commands.PixelmonCommand;
+import us.hqgaming.gymmanagement.gym.Gym;
 
 public class RemoveBadge extends PixelmonCommand {
 
-	private GymManagement plugin;
+	private final GymManagement plugin;
 
 	public RemoveBadge(GymManagement plugin) {
 		super("remove", CommandType.BADGE);
@@ -55,19 +54,15 @@ public class RemoveBadge extends PixelmonCommand {
 			return;
 		}
 
-		for (Badge bd : Badge.values()) {
-
-			if (bd.name() == badge.name()) {
-
-				plugin.getBadges(other).remove(bd);
-				player.sendMessage(ChatColor.GREEN + "You have removed "
-						+ other.getName() + "'s " + ChatColor.RED
-						+ bd.name().toUpperCase() + ChatColor.GREEN + " badge!");
-				other.sendMessage(ChatColor.GREEN + player.getName()
-						+ " has removed your " + ChatColor.RED
-						+ bd.name().toUpperCase() + ChatColor.GREEN + " badge!");
-				plugin.getDataManager().flushData(plugin.getBadgeAccounts());
-			}
-		}
+		plugin.getBadges(other).remove(badge);
+		player.sendMessage(ChatColor.GREEN + "You have removed "
+				+ other.getName() + "'s " + ChatColor.RED
+				+ badge.getBadgeName().toUpperCase() + ChatColor.GREEN
+				+ " badge!");
+		other.sendMessage(ChatColor.GREEN + player.getName()
+				+ " has removed your " + ChatColor.RED
+				+ badge.getBadgeName().toUpperCase() + ChatColor.GREEN
+				+ " badge!");
+		plugin.getDataManager().flushData(plugin.getBadgeAccounts());
 	}
 }
