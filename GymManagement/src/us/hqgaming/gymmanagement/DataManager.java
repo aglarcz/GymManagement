@@ -122,7 +122,7 @@ public class DataManager {
 		return dfile;
 	}
 
-	public void flushData(Object o) {
+	public void saveData(Object o) {
 		try {
 
 			ObjectOutputStream oos = new ObjectOutputStream(

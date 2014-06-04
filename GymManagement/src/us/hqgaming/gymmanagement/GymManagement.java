@@ -33,72 +33,60 @@ import us.hqgaming.gymmanagement.gym.OpenGym;
 
 /** --- Gym Management ---
  * 
- * @version 1.3
+ * @version 1.4
  * @author Xeno */
 
+@SuppressWarnings("deprecation")
 public class GymManagement extends JavaPlugin implements Listener {
 
 	private static HashMap<String, List<Badge>> badges = new HashMap<String, List<Badge>>();
-	static List<Gym> gyms = new ArrayList<Gym>();
-	static List<ItemStack> items = new ArrayList<ItemStack>();
+	public static List<Gym> gyms = new ArrayList<Gym>();
+	public static List<ItemStack> items = new ArrayList<ItemStack>();
 	public List<PixelmonCommand> cmds = new ArrayList<PixelmonCommand>();
 
-	public static Inventory gymMenu;
 	public static String prefix;
+	public static Inventory gymMenu;
 	public static boolean newFile = false;
-	private int gymSlots;
 
-	private DataManager data;
+	private int gymSlots;
+	private int badgeSlots;
 
 	public void onEnable() {
 
 		saveDefaultConfig();
 		this.getServer().getPluginManager().registerEvents(this, this);
-		try {
 
-			load();
-
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		loadData();
+		loadConfiguration();
+		registerGyms();
+		registerPermissions();
+		registerCommands();
+		updateGymMenu();
 
 	}
 
 	public void onDisable() {
 
-		getDataManager().flushData(badges);
+		getDataManager().saveData(badges);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void load() throws InterruptedException {
-		gymSlots = getConfig().getInt("Gym-Slots");
-		prefix = getConfig().getString("Chat-Prefix");
-		data = DataManager.getInstance();
-		registerGyms();
-		registerPermissions();
+	private void loadConfiguration() {
 
-		new GymMenu(this);
-		getDataManager().setupData(this);
-		gymMenu = Bukkit.createInventory(null, gymSlots, "Gyms");
+		gymSlots = getConfig().getInt("Gym-Slots");
+		badgeSlots = getConfig().getInt("Badge-Slots");
+		prefix = getConfig().getString("Chat-Prefix");
+	}
+
+	private void registerCommands() {
 		getCommand("badges").setExecutor(new CommandManager(this));
 		getCommand("badge").setExecutor(new CommandManager(this));
 		getCommand("gym").setExecutor(new CommandManager(this));
 		getCommand("gyms").setExecutor(new CommandManager(this));
-
-		if (!newFile) {
-			badges = (HashMap<String, List<Badge>>) this.getDataManager()
-					.loadData(getDataManager().getData());
-		} else {
-			badges = new HashMap<String, List<Badge>>();
-		}
-
 		cmds.add(new GiveBadge(this));
 		cmds.add(new RemoveBadge(this));
 		cmds.add(new SeeBadge(this));
 		cmds.add(new OpenGym(this));
 		cmds.add(new CloseGym(this));
-		this.updateGymMenu();
 	}
 
 	private void registerPermissions() {
@@ -110,13 +98,17 @@ public class GymManagement extends JavaPlugin implements Listener {
 			perm.setDefault(PermissionDefault.OP);
 			Bukkit.getServer().getPluginManager().addPermission(perm);
 			Bukkit.getLogger().info(
-					"Permission: " + perm.getName() + " has been registered!");
+					"Gym Permission: " + perm.getName()
+							+ " has been registered!");
 
 		}
 
 	}
 
 	private void registerGyms() {
+
+		new GymMenu(this);
+		gymMenu = Bukkit.createInventory(null, gymSlots, "Gyms");
 
 		for (String gymName : getConfig().getConfigurationSection("Gyms")
 				.getKeys(false)) {
@@ -137,17 +129,32 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	private void loadData() {
+		getDataManager().setupData(this);
+		if (!newFile) {
+			badges = (HashMap<String, List<Badge>>) this.getDataManager()
+					.loadData(getDataManager().getData());
+		} else {
+			badges = new HashMap<String, List<Badge>>();
+		}
+	}
+
 	public HashMap<String, List<Badge>> getBadgeAccounts() {
 
 		return badges;
 	}
 
 	public DataManager getDataManager() {
-		return data;
+		return DataManager.getInstance();
 	}
 
 	public int getGymSlots() {
 		return gymSlots;
+	}
+
+	public int getBadgeSlots() {
+		return badgeSlots;
 	}
 
 	public String getPrefix() {
@@ -244,7 +251,6 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	public void updateGymMenu() {
 		clearInventory(gymMenu);
 		items.clear();
@@ -316,15 +322,14 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	public void openBadgeInventory(Player player) {
 
 		for (Entry<String, List<Badge>> e : this.getBadgeAccounts().entrySet()) {
 			if (Bukkit.getPlayer(e.getKey()) == player) {
 				List<Badge> badges = e.getValue();
 
-				Inventory inventory = Bukkit.createInventory(player, 9,
-						player.getName() + "'s Badges");
+				Inventory inventory = Bukkit.createInventory(player,
+						this.getBadgeSlots(), player.getName() + "'s Badges");
 
 				for (Badge badge : badges) {
 					inventory.addItem(new ItemStack(badge.getID()));
@@ -337,15 +342,14 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	public void openBadgeInventory(Player player, Player other) {
 
 		for (Entry<String, List<Badge>> e : this.getBadgeAccounts().entrySet()) {
 			if (Bukkit.getPlayer(e.getKey()) == other) {
 				List<Badge> badges = e.getValue();
 
-				Inventory inventory = Bukkit.createInventory(other, 9,
-						other.getName() + "'s Badges");
+				Inventory inventory = Bukkit.createInventory(other,
+						this.getBadgeSlots(), other.getName() + "'s Badges");
 
 				for (Badge badge : badges) {
 					inventory.addItem(new ItemStack(badge.getID()));
@@ -385,7 +389,7 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 		this.getBadgeAccounts().put(name, newBadges);
 
-		getDataManager().flushData(badges);
+		getDataManager().saveData(badges);
 
 	}
 }

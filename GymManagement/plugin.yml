@@ -1,5 +1,5 @@
 name: GymManagement
-version: 1.3
+version: 1.4
 main: us.hqgaming.gymmanagement.GymManagement
 author: Xeno
 description: 
@@ -12,7 +12,7 @@ commands:
   gym:
     description: Gym Commands
   gyms:
-    description: Gym Commands
+    description: Displays gyms
 permissions:
   badge.see:
     default: op

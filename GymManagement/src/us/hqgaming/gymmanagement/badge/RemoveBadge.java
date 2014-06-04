@@ -63,6 +63,6 @@ public class RemoveBadge extends PixelmonCommand {
 				+ " has removed your " + ChatColor.RED
 				+ badge.getBadgeName().toUpperCase() + ChatColor.GREEN
 				+ " badge!");
-		plugin.getDataManager().flushData(plugin.getBadgeAccounts());
+		plugin.getDataManager().saveData(plugin.getBadgeAccounts());
 	}
 }

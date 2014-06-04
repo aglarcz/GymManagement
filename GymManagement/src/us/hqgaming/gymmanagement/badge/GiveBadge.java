@@ -69,7 +69,7 @@ public class GiveBadge extends PixelmonCommand {
 					+ ChatColor.RED + badge.getBadgeName().toUpperCase()
 					+ ChatColor.GREEN + " badge!");
 		}
-		plugin.getDataManager().flushData(plugin.getBadgeAccounts());
+		plugin.getDataManager().saveData(plugin.getBadgeAccounts());
 
 	}
 }
