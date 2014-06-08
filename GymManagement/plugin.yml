@@ -5,6 +5,9 @@ author: Xeno
 description: 
          A gym plugin made by Xeno from HQGaming.us
 commands:
+  gymmanagement:
+    description: Main command
+    aliases: [gmanage, gmanagement, gymm]
   badges:
     description: Displays badges
   badge:
@@ -14,6 +17,24 @@ commands:
   gyms:
     description: Displays gyms
 permissions:
+  gymmanagement.reload:
+    default: op
+    description: Allows a player to see others badges
+  gym.authority:
+    default: op
+    description: Allows a player to manipulate other gyms
+  gym.open:
+    default: op
+    description: Allows a player to open their gym
+  gym.leaders:
+    default: op
+    description: Allows a player to see online gym leaders
+  gym.menu:
+    default: op
+    description: Allows a player to see gym menu
+  gym.close:
+    default: op
+    description: Allows a player to close their gym
   badge.see:
     default: op
     description: Allows a player to see others badges

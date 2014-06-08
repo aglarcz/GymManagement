@@ -6,6 +6,7 @@ Gyms:
        Gym-Name: '&7&lExample Gym' # Will be shown on login message and /gyms #
        Badge-Name: 'Example' # Badge name #
        On-Item-Click-Command-Name: 'warp example' # Player performs this command on item click in /gyms #
+       Run-On-Click-Command-If-Gym-Closed: true # Will the command on item click command run if the gym is closed? #
        Gym-Item: 2 # Gym item id in /gyms #
        Badge-Item: 21 # Gym item id #
        Item-Lore: # Item lore list in /gyms #
@@ -16,6 +17,7 @@ Gyms:
        Gym-Name: '&a&lTest Gym' # Will be shown on login message and /gyms #
        Badge-Name: 'Test' # Badge name #
        On-Item-Click-Command-Name: 'warp testgym' # Player performs this command on item click in /gyms #
+       Run-On-Click-Command-If-Gym-Closed: true # Will the command on item click command run if the gym is closed? #
        Gym-Item: 3 # Gym item id in /gyms #
        Badge-Item: 98 # Gym item id #
        Item-Lore: # Item lore list in /gyms #

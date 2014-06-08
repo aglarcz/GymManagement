@@ -8,6 +8,7 @@ public class Gym {
 	private String itemClickCommandName;
 	private Badge badge;
 	private boolean status = false;
+	private boolean isRunCommandIfClosed;
 	private int gymItemID;
 	private final String name;
 
@@ -23,12 +24,20 @@ public class Gym {
 		return status;
 	}
 
+	public void setRunCommandIfClosed(boolean isRunCommandIfClosed) {
+		this.isRunCommandIfClosed = isRunCommandIfClosed;
+	}
+
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
 
 	public void setChatName(String chatName) {
 		this.chatName = chatName;
+	}
+
+	public boolean isRunCommandIfClosed() {
+		return this.isRunCommandIfClosed;
 	}
 
 	public void setGymItemID(int gymItemID) {

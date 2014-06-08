@@ -11,7 +11,7 @@ import us.hqgaming.gymmanagement.commands.PixelmonCommand;
 
 public class SeeBadge extends PixelmonCommand {
 
-	private GymManagement plugin;
+	private final GymManagement plugin;
 
 	public SeeBadge(GymManagement plugin) {
 		super("see", CommandType.BADGE);
@@ -27,7 +27,7 @@ public class SeeBadge extends PixelmonCommand {
 
 		Player player = (Player) sender;
 
-		if (!player.hasPermission("Badge.see")) {
+		if (!player.hasPermission("badge.see")) {
 			player.sendMessage(ChatColor.RED
 					+ "You do not have permission to execute this command.");
 			return;

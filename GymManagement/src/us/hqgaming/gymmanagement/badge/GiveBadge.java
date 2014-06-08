@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.hqgaming.gymmanagement.Chat;
+import us.hqgaming.gymmanagement.ChatManager;
 import us.hqgaming.gymmanagement.GymManagement;
 import us.hqgaming.gymmanagement.commands.CommandType;
 import us.hqgaming.gymmanagement.commands.PixelmonCommand;
@@ -29,14 +29,9 @@ public class GiveBadge extends PixelmonCommand {
 
 		Player player = (Player) sender;
 
-		if (!player.hasPermission("Badge.give")) {
-			player.sendMessage(ChatColor.RED
-					+ "You do not have permission to execute this command.");
-			return;
-		}
-
-		if (!plugin.isGymLeader(player)) {
-			player.sendMessage(ChatColor.RED + "You are not a gym leader.");
+		if (!player.hasPermission("badge.give")) {
+			ChatManager.messagePlayer(player,
+					"&cYou do not have permission to execute this command.");
 			return;
 		}
 
@@ -45,29 +40,80 @@ public class GiveBadge extends PixelmonCommand {
 			return;
 		}
 
-		Gym gym = plugin.getPlayerGym(player);
+		Gym gym = null;
+		if (args.length >= 2) {
+			if (plugin.isGymLeader(player)) {
+				if (args[1].equalsIgnoreCase(plugin.getPlayerGym(player)
+						.getGymName())) {
+					gym = plugin.getPlayerGym(player);
+				} else {
+					if (player.hasPermission("gym.authority")) {
+						if (!plugin.isGym(args[1])) {
+							ChatManager.messagePlayer(player, ChatColor.RED
+									+ args[1] + " is not a gym.");
+							return;
+						} else {
+							gym = plugin.getGym(args[1]);
+						}
+					} else {
+						ChatManager
+								.messagePlayer(player,
+										"&cYou do not have permission to access other gyms");
+						return;
+					}
+				}
+			} else {
+				if (player.hasPermission("gym.authority")) {
+					if (!plugin.isGym(args[1])) {
+						ChatManager.messagePlayer(player, ChatColor.RED
+								+ args[1] + " is not a gym.");
+						return;
+					} else {
+						gym = plugin.getGym(args[1]);
+					}
+				} else {
+					ChatManager
+							.messagePlayer(player,
+									"&cYou do not have permission to access other gyms");
+					return;
+				}
+			}
+		} else {
+			if (plugin.isGymLeader(player)) {
+				gym = plugin.getPlayerGym(player);
+			}
+		}
+
+		if (gym == null) {
+			ChatManager
+					.messagePlayer(player,
+							"&cYou are not a gym leader! Try /badge {argument} {gymname}");
+			return;
+		}
+
 		Badge badge = gym.getBadge();
 		Player other = Bukkit.getPlayer(args[0]);
 
-		if (plugin.getBadges(other).contains(badge)) {
-			player.sendMessage(ChatColor.RED
-					+ "This player already has your gym badge.");
+		if (plugin.hasBadge(other, badge.getBadgeName())) {
+			ChatManager.messagePlayer(player,
+					"&cThis player already has that gym badge");
 			return;
 		}
 
 		plugin.getBadges(other).add(badge);
-		player.sendMessage(ChatColor.GREEN + "You have given "
+		ChatManager.messagePlayer(player, ChatColor.GREEN + "You have given "
 				+ other.getName() + " the " + ChatColor.RED
 				+ badge.getBadgeName().toUpperCase() + ChatColor.GREEN
 				+ " badge!");
-		other.sendMessage(ChatColor.GREEN + player.getName()
+		ChatManager.messagePlayer(player, ChatColor.GREEN + player.getName()
 				+ " has given you the " + ChatColor.RED
 				+ badge.getBadgeName().toUpperCase() + ChatColor.GREEN
 				+ " badge!");
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			Chat.messagePlayer(p, "&e" + other.getName() + "&a has earned the "
-					+ ChatColor.RED + badge.getBadgeName().toUpperCase()
-					+ ChatColor.GREEN + " badge!");
+			ChatManager.messagePlayer(p, "&e" + other.getName()
+					+ "&a has earned the " + ChatColor.RED
+					+ badge.getBadgeName().toUpperCase() + ChatColor.GREEN
+					+ " badge!");
 		}
 		plugin.getDataManager().saveData(plugin.getBadgeAccounts());
 

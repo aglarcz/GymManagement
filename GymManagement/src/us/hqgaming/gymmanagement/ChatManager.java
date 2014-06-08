@@ -3,7 +3,7 @@ package us.hqgaming.gymmanagement;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class Chat {
+public class ChatManager {
 
 	public static void messagePlayer(Player p, String label) {
 

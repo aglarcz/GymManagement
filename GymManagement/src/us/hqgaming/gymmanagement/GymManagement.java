@@ -3,6 +3,7 @@ package us.hqgaming.gymmanagement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -29,6 +30,7 @@ import us.hqgaming.gymmanagement.commands.CommandType;
 import us.hqgaming.gymmanagement.commands.PixelmonCommand;
 import us.hqgaming.gymmanagement.gym.CloseGym;
 import us.hqgaming.gymmanagement.gym.Gym;
+import us.hqgaming.gymmanagement.gym.LeadersGym;
 import us.hqgaming.gymmanagement.gym.OpenGym;
 
 /** --- Gym Management ---
@@ -40,13 +42,14 @@ import us.hqgaming.gymmanagement.gym.OpenGym;
 public class GymManagement extends JavaPlugin implements Listener {
 
 	private static HashMap<String, List<Badge>> badges = new HashMap<String, List<Badge>>();
-	public static List<Gym> gyms = new ArrayList<Gym>();
+	private static List<Gym> gyms = new ArrayList<Gym>();
 	public static List<ItemStack> items = new ArrayList<ItemStack>();
 	public List<PixelmonCommand> cmds = new ArrayList<PixelmonCommand>();
 
 	public static String prefix;
 	public static Inventory gymMenu;
 	public static boolean newFile = false;
+	private CommandManager cmdmanager;
 
 	private int gymSlots;
 	private int badgeSlots;
@@ -70,26 +73,34 @@ public class GymManagement extends JavaPlugin implements Listener {
 		getDataManager().saveData(badges);
 	}
 
-	private void loadConfiguration() {
+	public void loadConfiguration() {
 
 		gymSlots = getConfig().getInt("Gym-Slots");
 		badgeSlots = getConfig().getInt("Badge-Slots");
 		prefix = getConfig().getString("Chat-Prefix");
+
 	}
 
-	private void registerCommands() {
-		getCommand("badges").setExecutor(new CommandManager(this));
-		getCommand("badge").setExecutor(new CommandManager(this));
-		getCommand("gym").setExecutor(new CommandManager(this));
-		getCommand("gyms").setExecutor(new CommandManager(this));
+	public void registerCommands() {
+		cmdmanager = new CommandManager(this);
+
+		// Load Commands
+		for (Entry<String, Map<String, Object>> set : this.getDescription()
+				.getCommands().entrySet()) {
+
+			getCommand(set.getKey()).setExecutor(this.getCommandManager());
+
+		}
+
 		cmds.add(new GiveBadge(this));
 		cmds.add(new RemoveBadge(this));
 		cmds.add(new SeeBadge(this));
 		cmds.add(new OpenGym(this));
 		cmds.add(new CloseGym(this));
+		cmds.add(new LeadersGym(this));
 	}
 
-	private void registerPermissions() {
+	public void registerPermissions() {
 
 		for (Gym gym : gyms) {
 
@@ -105,7 +116,7 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 	}
 
-	private void registerGyms() {
+	public void registerGyms() {
 
 		new GymMenu(this);
 		gymMenu = Bukkit.createInventory(null, gymSlots, "Gyms");
@@ -119,6 +130,8 @@ public class GymManagement extends JavaPlugin implements Listener {
 					getConfig().getInt("Gyms." + gymName + ".Badge-Item"));
 			gym.setChatName(getConfig().getString(
 					"Gyms." + gymName + ".Gym-Name"));
+			gym.setRunCommandIfClosed(getConfig().getBoolean(
+					"Gyms." + gymName + ".Run-On-Click-Command-If-Gym-Closed"));
 			gym.setItemClickCommandName(getConfig().getString(
 					"Gyms." + gymName + ".On-Item-Click-Command-Name"));
 			gym.setGymItemID(getConfig()
@@ -130,7 +143,7 @@ public class GymManagement extends JavaPlugin implements Listener {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void loadData() {
+	public void loadData() {
 		getDataManager().setupData(this);
 		if (!newFile) {
 			badges = (HashMap<String, List<Badge>>) this.getDataManager()
@@ -161,6 +174,14 @@ public class GymManagement extends JavaPlugin implements Listener {
 		return prefix;
 	}
 
+	public List<Gym> getGyms() {
+		return gyms;
+	}
+
+	public CommandManager getCommandManager() {
+		return cmdmanager;
+	}
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent e) {
 		// Creates badge account if player does not have one
@@ -175,9 +196,9 @@ public class GymManagement extends JavaPlugin implements Listener {
 		Gym gym = getPlayerGym(e.getPlayer());
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			Chat.messagePlayer(p,
-					"&e" + e.getPlayer().getName() + " &a(" + gym.getChatName()
-							+ " Leader&a)&c has logged in!");
+			ChatManager.messagePlayer(p, "&e" + e.getPlayer().getName()
+					+ " &a(" + gym.getChatName()
+					+ " Leader&a)&c has logged in!");
 		}
 
 	}
@@ -199,11 +220,6 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 	public boolean isGymLeader(Player player) {
 
-		if (player.isOp()) {
-
-			return false;
-		}
-
 		int counter = 0;
 		for (Gym gym : gyms) {
 
@@ -223,18 +239,32 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 	}
 
+	public boolean isGym(String gymname) {
+		for (Gym gym : gyms) {
+			if (gym.getGymName().equalsIgnoreCase(gymname)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void helpMessage(CommandType commandType, Player player) {
-		player.sendMessage(ChatColor.RED + "Gym Management by Xeno");
+		player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				"&cGym Management by &b&nXenoJava.com&r"));
 		if (commandType == CommandType.BADGE) {
 			player.sendMessage(ChatColor.RED
-					+ "/badge give {player} - Gives players your gym badge.");
+					+ "/badge give {player} <Optional: (gym name)> - Gives players your gym badge.");
 			player.sendMessage(ChatColor.RED
-					+ "/badge remove {player} - Takes your gym badge away from players.");
+					+ "/badge remove {player} <Optional: (gym name)> - Takes your gym badge away from players.");
 			player.sendMessage(ChatColor.RED
 					+ "/badge see {player} - Displays player's badges.");
 		} else if (commandType == CommandType.GYM) {
-			player.sendMessage(ChatColor.RED + "/gym open - Opens gym.");
-			player.sendMessage(ChatColor.RED + "/gym close - Closes gym.");
+			player.sendMessage(ChatColor.RED
+					+ "/gym open <Optional: (gym name)> - Opens gym.");
+			player.sendMessage(ChatColor.RED
+					+ "/gym close <Optional: (gym name)> - Closes gym.");
+			player.sendMessage(ChatColor.RED
+					+ "/gym leaders - Lists online gym leaders.");
 		}
 
 	}
@@ -320,6 +350,56 @@ public class GymManagement extends JavaPlugin implements Listener {
 
 		return null;
 
+	}
+
+	public Gym getGym(String gymname) {
+
+		for (Gym gym : gyms) {
+			if (gym.getGymName().equalsIgnoreCase(gymname)) {
+				return gym;
+			}
+		}
+		return null;
+	}
+
+	public boolean hasOnlineLeaders() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+
+			if (isGymLeader(p)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasBadge(Player player, String name) {
+		for (Entry<String, List<Badge>> e : this.getBadgeAccounts().entrySet()) {
+			if (Bukkit.getPlayer(e.getKey()) == player) {
+				List<Badge> badges = e.getValue();
+				for (Badge badge : badges) {
+					if (badge.getBadgeName().equalsIgnoreCase(name)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public void removeBadge(Player player, String name) {
+		for (Entry<String, List<Badge>> e : this.getBadgeAccounts().entrySet()) {
+			if (Bukkit.getPlayer(e.getKey()) == player) {
+				List<Badge> badges = e.getValue();
+				Badge badge = null;
+				for (Badge b : badges) {
+					if (b.getBadgeName().equalsIgnoreCase(name)) {
+						badge = b;
+					}
+				}
+
+				e.getValue().remove(badge);
+			}
+		}
 	}
 
 	public void openBadgeInventory(Player player) {

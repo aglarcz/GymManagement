@@ -26,21 +26,32 @@ public class GymMenu implements Listener {
 		if (e.getInventory().getTitle() == "Gyms") {
 			if (e.getCurrentItem() != null) {
 
-				for (Gym gym : GymManagement.gyms) {
+				for (Gym gym : plugin.getGyms()) {
 
 					if (e.getCurrentItem().getTypeId() == gym.getGymItemID()) {
+
+						if (!gym.isOpen()) {
+							if (!gym.isRunCommandIfClosed()) {
+								break;
+							}
+						}
+
 						player.performCommand(gym.getItemClickCommandName());
+						break;
 					}
 				}
 			}
-
-			e.setCancelled(true);
-			player.playSound(player.getLocation(), Sound.CLICK, 1, 1);
 		}
+		e.setCancelled(true);
+		player.playSound(player.getLocation(), Sound.CLICK, 1, 1);
 	}
 
 	public static void showMenu(final Player player) {
-
+		if (!player.hasPermission("gym.menu")) {
+			ChatManager.messagePlayer(player,
+					"&cYou do not have permission to execute this command.");
+			return;
+		}
 		player.openInventory(GymManagement.gymMenu);
 	}
 }
