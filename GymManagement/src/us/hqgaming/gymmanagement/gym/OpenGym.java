@@ -81,7 +81,7 @@ public class OpenGym extends PixelmonCommand {
 		if (gym == null) {
 			ChatManager
 					.messagePlayer(player,
-							"&cYou are not a gym leader! Try /gym {argument} {gymname}");
+							"&cYou are not a gym leader! Try /gym open/close {gymname}");
 			return;
 		}
 

@@ -14,7 +14,8 @@ public abstract class PixelmonCommand {
 
 	}
 
-	public abstract void runCommand(CommandSender sender, String[] args);
+	public abstract void runCommand(CommandSender sender, String[] args)
+			throws Exception;
 
 	public String getName() {
 		return name;

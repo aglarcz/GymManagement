@@ -50,6 +50,7 @@ public class Gym {
 
 	public void setBadge(String badgeName, int itemID) {
 		this.badge = new Badge(badgeName);
+		this.badge.setGymName(this.getGymName());
 		this.badge.setID(itemID);
 	}
 

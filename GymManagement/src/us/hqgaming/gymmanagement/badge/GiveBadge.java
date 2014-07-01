@@ -1,5 +1,7 @@
 package us.hqgaming.gymmanagement.badge;
 
+import java.io.IOException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -20,7 +22,8 @@ public class GiveBadge extends PixelmonCommand {
 		this.plugin = plugin;
 	}
 
-	public void runCommand(CommandSender sender, String[] args) {
+	public void runCommand(CommandSender sender, String[] args)
+			throws IOException {
 
 		if (!(sender instanceof Player)) {
 			System.out.println("Only players are able to run this command.");
@@ -87,20 +90,31 @@ public class GiveBadge extends PixelmonCommand {
 		if (gym == null) {
 			ChatManager
 					.messagePlayer(player,
-							"&cYou are not a gym leader! Try /badge {argument} {gymname}");
+							"&cYou are not a gym leader! Try /badge give/remove/see {player} {gymname}");
 			return;
 		}
 
 		Badge badge = gym.getBadge();
 		Player other = Bukkit.getPlayer(args[0]);
 
-		if (plugin.hasBadge(other, badge.getBadgeName())) {
-			ChatManager.messagePlayer(player,
-					"&cThis player already has that gym badge");
+		if (other == null) {
+			ChatManager
+					.messagePlayer(player, "&c" + args[0] + " is not online");
 			return;
 		}
 
-		plugin.getBadges(other).add(badge);
+		BadgeAccount account = plugin.getBadgeAccount(other.getName());
+
+		if (account.hasBadge(badge)) {
+			ChatManager.messagePlayer(player, "&c" + args[0]
+					+ " already has your gym badge");
+			return;
+		}
+
+		account.addBadge(badge);
+
+		account.save(plugin.getDataManager());
+
 		ChatManager.messagePlayer(player, ChatColor.GREEN + "You have given "
 				+ other.getName() + " the " + ChatColor.RED
 				+ badge.getBadgeName().toUpperCase() + ChatColor.GREEN
@@ -115,7 +129,6 @@ public class GiveBadge extends PixelmonCommand {
 					+ badge.getBadgeName().toUpperCase() + ChatColor.GREEN
 					+ " badge!");
 		}
-		plugin.getDataManager().saveData(plugin.getBadgeAccounts());
 
 	}
 }

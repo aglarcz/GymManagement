@@ -1,6 +1,9 @@
+# Website: http://www.HQGaming.us #
 Chat-Prefix: "&7[&cHQ&fGaming&7] "
 Gym-Slots: 9 # /gyms max slots #
 Badge-Slots: 9 # /badges max slots #
+Config-Version: 3 # DO NOT CHANGE IF YOU WANT TO LIVE #
+Update-Check: true
 Gyms:
      Example:
        Gym-Name: '&7&lExample Gym' # Will be shown on login message and /gyms #

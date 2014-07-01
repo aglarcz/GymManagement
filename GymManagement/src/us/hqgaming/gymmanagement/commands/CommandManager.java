@@ -1,5 +1,6 @@
 package us.hqgaming.gymmanagement.commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -11,9 +12,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
+import us.hqgaming.gymmanagement.ChatManager;
 import us.hqgaming.gymmanagement.GymManagement;
 import us.hqgaming.gymmanagement.GymMenu;
+import us.hqgaming.gymmanagement.badge.BadgeAccount;
 import us.hqgaming.gymmanagement.gym.Gym;
+import us.hqgaming.gymmanagement.utils.Log;
+import us.hqgaming.gymmanagement.utils.Updater;
 
 public class CommandManager implements CommandExecutor {
 
@@ -23,123 +28,152 @@ public class CommandManager implements CommandExecutor {
 		this.plugin = plugin;
 	}
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label,
-			String[] args) {
-		Player player = (Player) sender;
+	public boolean onCommand(final CommandSender sender, Command cmd,
+			String label, String[] args) {
 
 		if (label.equalsIgnoreCase("badges")) {
 
-			// Creates badge account if player does not have one
-			if (!plugin.hasBadgeAccount(player.getName())) {
-				plugin.createBadgeAccount(player.getName());
+			if (!(sender instanceof Player)) {
+				Bukkit.getLogger().info("Command can only be ran in-game.");
+				return true;
 			}
 
-			plugin.openBadgeInventory(player);
+			Player player = (Player) sender;
+
+			plugin.getBadgeAccount(player.getName());
+
+			player.openInventory(plugin.getBadgeInventory(plugin
+					.getBadgeAccount(player.getName())));
 
 		} else if (label.equalsIgnoreCase("gyms")) {
+			if (!(sender instanceof Player)) {
+				Bukkit.getLogger().info("Command can only be ran in-game.");
+				return true;
+			}
+
+			Player player = (Player) sender;
 
 			GymMenu.showMenu(player);
 
 		} else if (label.equalsIgnoreCase("gymmanagement")) {
 
 			if (args.length == 0) {
-				player.sendMessage(ChatColor.RED + "/gymmanagement help");
-				player.sendMessage(ChatColor.RED + "/gymmanagement reload");
+				sender.sendMessage(ChatColor.RED + "/gymmanagement help");
+				sender.sendMessage(ChatColor.RED + "/gymmanagement reload");
 				return true;
 			}
 
 			if (args[0].equalsIgnoreCase("reload")) {
 
-				if (!player.hasPermission("gymmanagement.reload")) {
-					player.sendMessage(ChatColor.RED
-							+ "You do not have permission to reload "
-							+ plugin.getDescription().getFullName());
+				if (!sender.hasPermission("gymmanagement.reload")) {
+					ChatManager.messageSender(sender,
+							"&cYou do not have permission to reload "
+									+ plugin.getDescription().getFullName());
 					return true;
 				}
 
 				for (Permission perm : Bukkit.getPluginManager()
 						.getPermissions()) {
-
-					for (Gym gym : plugin.getGyms()) {
-
+					for (Gym gym : GymManagement.getGyms()) {
 						if (perm.getName().equalsIgnoreCase(
 								"gym." + gym.getGymName())) {
 
 							Bukkit.getPluginManager().removePermission(perm);
-							Bukkit.getLogger().info(
-									perm.getName() + " has been unregistered");
-
+							Log.info(perm.getName() + " has been unregistered");
 						}
 					}
 				}
 
-				plugin.getGyms().clear();
+				for (BadgeAccount account : GymManagement.getBadgeAccounts()) {
+					try {
+						account.save(plugin.getDataManager());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+
+				GymManagement.getGyms().clear();
 				GymManagement.items.clear();
-				plugin.getDataManager().saveData(plugin.getBadgeAccounts());
+				plugin.reloadBadges();
 				plugin.reloadConfig();
-				plugin.loadData();
 				plugin.loadConfiguration();
 				plugin.registerGyms();
 				plugin.registerPermissions();
 				plugin.updateGymMenu();
 
-				player.sendMessage(ChatColor.GREEN
+				sender.sendMessage(ChatColor.GREEN
 						+ plugin.getDescription().getFullName()
 						+ " has been reloaded!");
 				return true;
 			} else if (args[0].equalsIgnoreCase("help")) {
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&6▇▇▇▇▇▇▇▇ " + "&cGym Management" + " &6▇▇▇▇▇▇▇▇▇"));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&6/gymmanagement help &a- &cSends you here :D"));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&6/gymmanagement reload &a- &cReloads entire plugin."));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						"&6/gymmanagement update &a- &cUpdates plugin"));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&6/gyms &a- &cDisplays gym menu."));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&6/badges &a- &cDisplays your gym badges."));
-				player.sendMessage(ChatColor
+				sender.sendMessage(ChatColor
 						.translateAlternateColorCodes('&',
 								"&6/gym open <Optional: (gym name)> &a- &cOpens a gym."));
-				player.sendMessage(ChatColor
+				sender.sendMessage(ChatColor
 						.translateAlternateColorCodes('&',
 								"&6/gym close <Optional: (gym name)> &a- &cCloses a gym."));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&6/gym leaders &a- &cDisplays online gym leaders."));
-				player.sendMessage(ChatColor
+				sender.sendMessage(ChatColor
 						.translateAlternateColorCodes('&',
 								"&6/badge give (name) <Optional: (gym name)> &a- &cGives a player gym badge."));
-				player.sendMessage(ChatColor
+				sender.sendMessage(ChatColor
 						.translateAlternateColorCodes(
 								'&',
 								"&6/badge remove (name) <Optional: (gym name)> &a- &cRemoves a player gym badge."));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&6/badge see (name) - &cDisplays player's badges."));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&6▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇"));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&aWritten by &c&nwww.XenoJava.com"));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&aFrom &c&nwww.HQGaming.us"));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						"&aProvided by &c&nwww.HQGaming.us"));
+				return true;
+			} else if (args[0].equalsIgnoreCase("update")) {
+
+				if (!sender.hasPermission("gymmanagement.update")) {
+					ChatManager.messageSender(sender,
+							"&cYou do not have permission to update "
+									+ plugin.getDescription().getFullName());
+				}
+
+				update(sender);
+
 				return true;
 			}
 
-			player.sendMessage(ChatColor.RED + "/gymmanagement help");
-			player.sendMessage(ChatColor.RED + "/gymmanagement reload");
+			sender.sendMessage(ChatColor.RED + "/gymmanagement help");
+			sender.sendMessage(ChatColor.RED + "/gymmanagement update");
+			sender.sendMessage(ChatColor.RED + "/gymmanagement reload");
 
-		} else if (label.equalsIgnoreCase("badge")) {
+		} else if (label.equalsIgnoreCase("gym")
+				|| label.equalsIgnoreCase("badge")) {
+			if (!(sender instanceof Player)) {
+				Log.info("Command can only be ran in-game.");
+				return true;
+			}
+
+			Player player = (Player) sender;
 			if (args.length == 0) {
-				/*
-				 * Checks if arguments are equal to 0 and if they are it will
-				 * display all available commands.
-				 */
-
-				plugin.helpMessage(CommandType.BADGE, player);
-
+				plugin.helpMessage(CommandType.getCommandType(label), player);
 				return true;
 			}
+
 			/*
-			 * Example of inheriting from a class
+			 * Converting to sub command
 			 */
 
 			ArrayList<String> a = new ArrayList<String>(Arrays.asList(args));
@@ -147,53 +181,65 @@ public class CommandManager implements CommandExecutor {
 
 			for (PixelmonCommand c : plugin.cmds) {
 				if (c.getName().equalsIgnoreCase(args[0])
-						&& c.getCommandType() == CommandType.BADGE) {
+						&& c.getCommandType().name().equalsIgnoreCase(label)) {
 					try {
+						/*
+						 *  When a command is run it can throw an exception
+						 */
 						c.runCommand(sender, a.toArray(new String[a.size()]));
+
 					} catch (Exception e) {
+
 						sender.sendMessage(ChatColor.RED
 								+ "An error has occurred.");
+
 						e.printStackTrace();
 					}
 					return true;
 				}
 			}
 
-			plugin.helpMessage(CommandType.BADGE, player);
-		} else if (label.equalsIgnoreCase("gym")) {
-			if (args.length == 0) {
-				/*
-				 * Checks if arguments are equal to 0 and if they are it will
-				 * display all available commands.
-				 */
-
-				plugin.helpMessage(CommandType.GYM, player);
-
-				return true;
-			}
-			/*
-			 * Example of inheriting from a class
-			 */
-
-			ArrayList<String> a = new ArrayList<String>(Arrays.asList(args));
-			a.remove(0);
-
-			for (PixelmonCommand c : plugin.cmds) {
-				if (c.getName().equalsIgnoreCase(args[0])
-						&& c.getCommandType() == CommandType.GYM) {
-					try {
-						c.runCommand(sender, a.toArray(new String[a.size()]));
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED
-								+ "An error has occurred.");
-						e.printStackTrace();
-					}
-					return true;
-				}
-			}
-
-			plugin.helpMessage(CommandType.GYM, player);
+			plugin.helpMessage(CommandType.getCommandType(label), player);
 		}
 		return false;
+	}
+
+	private void update(final CommandSender sender) {
+		if (GymManagement.UPDATE_CHECK) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					sender.sendMessage(plugin.getPrefix()
+							+ "§eRunning updater ..");
+
+					Updater updater = new Updater(plugin, 79053, plugin
+							.getDataFile(),
+							Updater.UpdateType.NO_VERSION_CHECK, true);
+
+					switch (updater.getResult()) {
+					case FAIL_DBO:
+						sender.sendMessage(plugin.getPrefix()
+								+ "§cUpdater failed! (Could not contact dev.bukkit.org)");
+						break;
+					case FAIL_DOWNLOAD:
+						sender.sendMessage(plugin.getPrefix()
+								+ "§cUpdater failed! (Failed to download file)");
+						break;
+					case SUCCESS:
+						sender.sendMessage(plugin.getPrefix()
+								+ "§eDownload complete! (§7"
+								+ updater.getLatestName() + "§e)");
+						sender.sendMessage(plugin.getPrefix()
+								+ "§eRestart the server to apply the update.");
+						break;
+					default:
+						break;
+					}
+				}
+			}).start();
+		} else {
+			sender.sendMessage(plugin.getPrefix()
+					+ "§cThe updater has not been enabled in the config!");
+		}
 	}
 }

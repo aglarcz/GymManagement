@@ -1,11 +1,8 @@
 package us.hqgaming.gymmanagement.badge;
 
-import java.io.Serializable;
+public class Badge {
 
-public class Badge implements Serializable {
-
-	private static final long serialVersionUID = -6781313679137167727L;
-
+	private String gymName;
 	private int itemID;
 	private final String name;
 
@@ -17,8 +14,16 @@ public class Badge implements Serializable {
 		this.itemID = itemID;
 	}
 
+	public void setGymName(String gymName) {
+		this.gymName = gymName;
+	}
+
 	public int getID() {
 		return itemID;
+	}
+
+	public String getGymName() {
+		return gymName;
 	}
 
 	public String getBadgeName() {

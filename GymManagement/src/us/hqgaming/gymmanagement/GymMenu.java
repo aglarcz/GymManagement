@@ -23,25 +23,27 @@ public class GymMenu implements Listener {
 
 		Player player = (Player) e.getWhoClicked();
 
-		if (e.getInventory().getTitle() == "Gyms") {
-			if (e.getCurrentItem() != null) {
+		if (!e.getInventory().getTitle().equalsIgnoreCase("Gyms")) {
+			return;
+		}
+		if (e.getCurrentItem() != null) {
 
-				for (Gym gym : plugin.getGyms()) {
+			for (Gym gym : GymManagement.getGyms()) {
 
-					if (e.getCurrentItem().getTypeId() == gym.getGymItemID()) {
+				if (e.getCurrentItem().getTypeId() == gym.getGymItemID()) {
 
-						if (!gym.isOpen()) {
-							if (!gym.isRunCommandIfClosed()) {
-								break;
-							}
+					if (!gym.isOpen()) {
+						if (!gym.isRunCommandIfClosed()) {
+							break;
 						}
-
-						player.performCommand(gym.getItemClickCommandName());
-						break;
 					}
+
+					player.performCommand(gym.getItemClickCommandName());
+					break;
 				}
 			}
 		}
+
 		e.setCancelled(true);
 		player.playSound(player.getLocation(), Sound.CLICK, 1, 1);
 	}
