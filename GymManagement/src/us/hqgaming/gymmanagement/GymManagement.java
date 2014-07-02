@@ -1,7 +1,11 @@
 package us.hqgaming.gymmanagement;
 
+import com.google.common.io.Files;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +80,8 @@ public final class GymManagement extends JavaPlugin implements Listener {
             registerCommands();
             updateGymMenu();
 
-            if (config_version != 3 || config_version == -1) {
-                File configFile = new File(this.getDataFolder() + "/config.yml");
-                configFile.delete();
-                saveDefaultConfig();
+            if (config_version != 3) {
+                updateConfiguration();
             }
 
             if (UPDATE_CHECK) {
@@ -93,6 +95,7 @@ public final class GymManagement extends JavaPlugin implements Listener {
             }
 
         } catch (Exception ex) {
+            Log.severe("Plugin load exception");
             ex.printStackTrace();
         }
 
@@ -109,10 +112,53 @@ public final class GymManagement extends JavaPlugin implements Listener {
         BADGE_SLOTS = getConfig().getInt("Badge-Slots");
         prefix = ChatColor.translateAlternateColorCodes('&', getConfig()
                             .getString("Chat-Prefix"));
+    }
 
-        if (!getConfig().contains("Config-Version")) {
-            config_version += -1;
+    public void updateConfiguration() {
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            // read this file into InputStream
+            inputStream = this.getResource("config.yml");
+
+            // write the inputStream to a FileOutputStream
+            File configFile = new File(this.getDataFolder() + "/config.yml");
+            Files.copy(configFile, new File(this.getDataFolder() + "/config.old.yml"));
+            outputStream = new FileOutputStream(configFile);
+
+            int read = 0;
+            byte[] bytes = new byte[1024];
+
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+
+            Log.severe("Your configuration file has been updated");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log
+                                .severe(
+                                                    "Could not update config.yml!");
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (outputStream != null) {
+                try {
+                    // outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
         }
+
     }
 
     public void saveBadges(DataManager data) {

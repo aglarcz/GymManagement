@@ -1,5 +1,6 @@
 package us.hqgaming.gymmanagement.gym;
 
+import us.hqgaming.gymmanagement.GymManagement;
 import us.hqgaming.gymmanagement.badge.Badge;
 
 public class Gym {
@@ -14,6 +15,7 @@ public class Gym {
 
     public Gym(String name) {
         this.name = name;
+        GymManagement.getGyms().add(this);
     }
 
     public String getGymName() {

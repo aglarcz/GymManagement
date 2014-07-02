@@ -14,6 +14,7 @@ import org.bukkit.permissions.Permission;
 
 import us.hqgaming.gymmanagement.ChatManager;
 import us.hqgaming.gymmanagement.GymManagement;
+import static us.hqgaming.gymmanagement.GymManagement.config_version;
 import us.hqgaming.gymmanagement.GymMenu;
 import us.hqgaming.gymmanagement.badge.BadgeAccount;
 import us.hqgaming.gymmanagement.gym.Gym;
@@ -100,6 +101,10 @@ public class CommandManager implements CommandExecutor {
                 plugin.registerGyms();
                 plugin.registerPermissions();
                 plugin.updateGymMenu();
+
+                if (config_version != 3) {
+                    plugin.updateConfiguration();
+                }
 
                 sender.sendMessage(ChatColor.GREEN
                                     + plugin.getDescription().getFullName()
