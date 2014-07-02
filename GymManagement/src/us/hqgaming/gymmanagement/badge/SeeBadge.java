@@ -4,50 +4,51 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import us.hqgaming.gymmanagement.ChatManager;
 import us.hqgaming.gymmanagement.GymManagement;
 import us.hqgaming.gymmanagement.commands.CommandType;
 import us.hqgaming.gymmanagement.commands.PixelmonCommand;
+import us.hqgaming.gymmanagement.commands.PixelmonCommand.PluginRequired;
 
+@PluginRequired
 public class SeeBadge extends PixelmonCommand {
 
-	private final GymManagement plugin;
+    private final GymManagement plugin;
 
-	public SeeBadge(GymManagement plugin) {
-		super("see", CommandType.BADGE);
-		this.plugin = plugin;
-	}
+    public SeeBadge(GymManagement plugin) {
+        super("see", CommandType.BADGE);
+        this.plugin = plugin;
+    }
 
-	public void runCommand(CommandSender sender, String[] args) {
+    public void runCommand(CommandSender sender, String[] args) {
 
-		if (!(sender instanceof Player)) {
-			System.out.println("Only players are able to run this command.");
-			return;
-		}
+        if (!(sender instanceof Player)) {
+            System.out.println("Only players are able to run this command.");
+            return;
+        }
 
-		Player player = (Player) sender;
+        Player player = (Player) sender;
 
-		if (!player.hasPermission("badge.see")) {
-			player.sendMessage(ChatColor.RED
-					+ "You do not have permission to execute this command.");
-			return;
-		}
+        if (!player.hasPermission("badge.see")) {
+            player.sendMessage(ChatColor.RED
+                                + "You do not have permission to execute this command.");
+            return;
+        }
 
-		if (args.length < 1) {
-			plugin.helpMessage(CommandType.BADGE, player);
-			return;
-		}
+        if (args.length < 1) {
+            plugin.helpMessage(CommandType.BADGE, player);
+            return;
+        }
 
-		Player other = Bukkit.getPlayer(args[0]);
+        Player other = Bukkit.getPlayer(args[0]);
 
-		if (other == null) {
-			ChatManager.messagePlayer(player, "&cThis player is not online");
-			return;
-		}
+        if (other == null) {
+            ChatManager.messagePlayer(player, "&cThis player is not online");
+            return;
+        }
 
-		player.openInventory(plugin.getBadgeInventory(plugin
-				.getBadgeAccount(other.getName())));
+        player.openInventory(plugin.getBadgeInventory(plugin
+                            .getBadgeAccount(other.getName())));
 
-	}
+    }
 }

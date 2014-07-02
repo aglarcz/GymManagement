@@ -31,13 +31,13 @@ public class DataManager {
             try {
                 this.dfile.createNewFile();
             } catch (IOException e) {
-                Log.severe(ChatColor.RED + "Could not create badge_data.yml!");
+                Log.severe(ChatColor.RED + "Could not create badges.yml!");
             }
         }
 
         this.data = YamlConfiguration.loadConfiguration(this.dfile);
 
-        Log.info("Badge data backends have been established, ready for use!");
+        Log.info("The badge data backends have been established, ready for use!");
 
     }
 

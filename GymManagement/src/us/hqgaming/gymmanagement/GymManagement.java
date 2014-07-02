@@ -2,6 +2,7 @@ package us.hqgaming.gymmanagement;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import us.hqgaming.gymmanagement.badge.SeeBadge;
 import us.hqgaming.gymmanagement.commands.CommandManager;
 import us.hqgaming.gymmanagement.commands.CommandType;
 import us.hqgaming.gymmanagement.commands.PixelmonCommand;
+import us.hqgaming.gymmanagement.commands.PixelmonCommand.PluginRequired;
 import us.hqgaming.gymmanagement.gym.CloseGym;
 import us.hqgaming.gymmanagement.gym.Gym;
 import us.hqgaming.gymmanagement.gym.LeadersGym;
@@ -44,14 +46,13 @@ import us.hqgaming.gymmanagement.utils.Updater;
  * @version 1.5
  * @author Xeno
  */
-
 @SuppressWarnings("deprecation")
-public class GymManagement extends JavaPlugin implements Listener {
+public final class GymManagement extends JavaPlugin implements Listener {
 
     private static ArrayList<BadgeAccount> badgeAccounts = new ArrayList<BadgeAccount>();
     private static ArrayList<Gym> gyms = new ArrayList<Gym>();
     public static ArrayList<ItemStack> items = new ArrayList<ItemStack>();
-    public ArrayList<PixelmonCommand> cmds = new ArrayList<PixelmonCommand>();
+    public ArrayList<PixelmonCommand> subCmds = new ArrayList<PixelmonCommand>();
 
     public static String prefix;
     public static Inventory gymMenu;
@@ -64,43 +65,44 @@ public class GymManagement extends JavaPlugin implements Listener {
     private CommandManager cmdmanager;
 
     public void onEnable() {
+        try {
+            saveDefaultConfig();
+            this.getServer().getPluginManager().registerEvents(this, this);
 
-        saveDefaultConfig();
-        this.getServer().getPluginManager().registerEvents(this, this);
+            loadConfiguration();
+            getDataManager().setupData(this);
+            registerGyms();
+            registerPermissions();
+            registerCommands();
+            updateGymMenu();
 
-        loadConfiguration();
-        getDataManager().setupData(this);
-        registerGyms();
-        registerPermissions();
-        registerCommands();
-        updateGymMenu();
+            if (config_version != 3 || config_version == -1) {
+                File configFile = new File(this.getDataFolder() + "/config.yml");
+                configFile.delete();
+                saveDefaultConfig();
+            }
 
-        if (config_version != 3 || config_version == -1) {
-            Log.info("Plugin will now disable because your config is out of date, please reset you config in order for this plugin to start.");
-            this.getServer().getPluginManager().disablePlugin(this);
-        }
+            if (UPDATE_CHECK) {
+                getServer().getScheduler().runTaskTimerAsynchronously(this,
+                                    new BukkitRunnable() {
+                                        @Override
+                                        public void run() {
+                                            updateCheck();
+                                        }
+                                    }, 0, 20 * 60 * 60 * 3);
+            }
 
-        if (UPDATE_CHECK) {
-            getServer().getScheduler().runTaskTimerAsynchronously(this,
-                                new BukkitRunnable() {
-                                    @Override
-                                    public void run() {
-                                        updateCheck();
-                                    }
-                                }, 0, 20 * 60 * 60 * 3);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
     }
 
-    @Override
     public void onDisable() {
-
         saveBadges(this.getDataManager());
-
     }
 
     public void loadConfiguration() {
-
         config_version = getConfig().getInt("Config-Version");
         UPDATE_CHECK = getConfig().getBoolean("Update-Check");
         GYM_SLOTS = getConfig().getInt("Gym-Slots");
@@ -109,7 +111,7 @@ public class GymManagement extends JavaPlugin implements Listener {
                             .getString("Chat-Prefix"));
 
         if (!getConfig().contains("Config-Version")) {
-            config_version = -1;
+            config_version += -1;
         }
     }
 
@@ -131,23 +133,35 @@ public class GymManagement extends JavaPlugin implements Listener {
         }
     }
 
-    public void registerCommands() {
+    public void registerCommands() throws Exception {
         cmdmanager = new CommandManager(this);
-
-        // Load Commands
         for (Entry<String, Map<String, Object>> set : this.getDescription()
                             .getCommands().entrySet()) {
-
             getCommand(set.getKey()).setExecutor(this.getCommandManager());
-
         }
 
-        cmds.add(new GiveBadge(this));
-        cmds.add(new RemoveBadge(this));
-        cmds.add(new SeeBadge(this));
-        cmds.add(new OpenGym(this));
-        cmds.add(new CloseGym(this));
-        cmds.add(new LeadersGym(this));
+        this.registerSubCommand(GiveBadge.class);
+        this.registerSubCommand(RemoveBadge.class);
+        this.registerSubCommand(SeeBadge.class);
+        this.registerSubCommand(OpenGym.class);
+        this.registerSubCommand(CloseGym.class);
+        this.registerSubCommand(LeadersGym.class);
+    }
+
+    private void registerSubCommand(Class<? extends PixelmonCommand> clazz) throws Exception {
+        Constructor ctor = null;
+        PixelmonCommand cmd;
+
+        if (clazz.isAnnotationPresent(PluginRequired.class)) {
+            ctor = clazz.getDeclaredConstructor(this.getClass());
+            ctor.setAccessible(true);
+            cmd = (PixelmonCommand) ctor.newInstance(this);
+
+        } else {
+            cmd = (PixelmonCommand) clazz.newInstance();
+        }
+
+        this.subCmds.add(cmd);
     }
 
     public File getDataFile() {
@@ -214,14 +228,12 @@ public class GymManagement extends JavaPlugin implements Listener {
                                 "Gyms." + gymName + ".On-Item-Click-Command-Name"));
             gym.setGymItemID(getConfig()
                                 .getInt("Gyms." + gymName + ".Gym-Item"));
-            GymManagement.gyms.add(gym);
 
         }
 
     }
 
     public static ArrayList<BadgeAccount> getBadgeAccounts() {
-
         return badgeAccounts;
     }
 
@@ -281,7 +293,6 @@ public class GymManagement extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void handleUpdate(PlayerJoinEvent event) {
         final Player p = event.getPlayer();
-
         if (UPDATE_CHECK && !latestUpdate.equals("null")
                             || p.hasPermission("gymmanagement.update")) {
             Bukkit.getScheduler().runTaskLater(this, new BukkitRunnable() {
@@ -298,13 +309,10 @@ public class GymManagement extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onBadgesClick(InventoryClickEvent e) {
-
         if (!(e.getWhoClicked() instanceof Player)) {
             return;
         }
-
         Inventory inventory = e.getInventory();
-
         if (inventory.getTitle().contains("Badges")) {
             e.setCancelled(true);
             return;
