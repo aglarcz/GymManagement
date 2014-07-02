@@ -56,7 +56,7 @@ public class CommandManager implements CommandExecutor {
 
             GymMenu.showMenu(player);
 
-        } else if (label.equalsIgnoreCase("gymmanagement")) {
+        } else if (label.equalsIgnoreCase("gymmanagement") || label.equalsIgnoreCase("gmanage") || label.equalsIgnoreCase("gymm") || label.equalsIgnoreCase("gmanagement")) {
 
             if (args.length == 0) {
                 sender.sendMessage(ChatColor.RED + "/gymmanagement help");
@@ -183,7 +183,7 @@ public class CommandManager implements CommandExecutor {
             ArrayList<String> a = new ArrayList<String>(Arrays.asList(args));
             a.remove(0);
 
-            for (PixelmonCommand c : plugin.subCmds) {
+            for (SubCommand c : plugin.subCmds) {
                 if (c.getName().equalsIgnoreCase(args[0])
                                     && c.getCommandType().name().equalsIgnoreCase(label)) {
                     try {

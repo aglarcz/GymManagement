@@ -22,21 +22,21 @@ public class BadgeAccount {
     }
 
     public void addBadge(Badge badge) {
-        String badge_name = badge.getBadgeName();
+        String badge_name = badge.getName();
         if (!badges.contains(badge_name)) {
             badges.add(badge_name);
         }
     }
 
     public void removeBadge(Badge badge) {
-        String badge_name = badge.getBadgeName();
+        String badge_name = badge.getName();
         if (badges.contains(badge_name)) {
             badges.remove(badge_name);
         }
     }
 
     public boolean hasBadge(Badge badge) {
-        return badges.contains(badge.getBadgeName());
+        return badges.contains(badge.getName());
     }
 
     public List<String> getBadges() {

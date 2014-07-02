@@ -35,8 +35,8 @@ import us.hqgaming.gymmanagement.badge.RemoveBadge;
 import us.hqgaming.gymmanagement.badge.SeeBadge;
 import us.hqgaming.gymmanagement.commands.CommandManager;
 import us.hqgaming.gymmanagement.commands.CommandType;
-import us.hqgaming.gymmanagement.commands.PixelmonCommand;
-import us.hqgaming.gymmanagement.commands.PixelmonCommand.PluginRequired;
+import us.hqgaming.gymmanagement.commands.SubCommand;
+import us.hqgaming.gymmanagement.commands.SubCommand.PluginDependent;
 import us.hqgaming.gymmanagement.gym.CloseGym;
 import us.hqgaming.gymmanagement.gym.Gym;
 import us.hqgaming.gymmanagement.gym.LeadersGym;
@@ -56,7 +56,7 @@ public final class GymManagement extends JavaPlugin implements Listener {
     private static ArrayList<BadgeAccount> badgeAccounts = new ArrayList<BadgeAccount>();
     private static ArrayList<Gym> gyms = new ArrayList<Gym>();
     public static ArrayList<ItemStack> items = new ArrayList<ItemStack>();
-    public ArrayList<PixelmonCommand> subCmds = new ArrayList<PixelmonCommand>();
+    public ArrayList<SubCommand> subCmds = new ArrayList<SubCommand>();
 
     public static String prefix;
     public static Inventory gymMenu;
@@ -118,10 +118,7 @@ public final class GymManagement extends JavaPlugin implements Listener {
         InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
-            // read this file into InputStream
             inputStream = this.getResource("config.yml");
-
-            // write the inputStream to a FileOutputStream
             File configFile = new File(this.getDataFolder() + "/config.yml");
             Files.copy(configFile, new File(this.getDataFolder() + "/config.old.yml"));
             outputStream = new FileOutputStream(configFile);
@@ -194,17 +191,17 @@ public final class GymManagement extends JavaPlugin implements Listener {
         this.registerSubCommand(LeadersGym.class);
     }
 
-    private void registerSubCommand(Class<? extends PixelmonCommand> clazz) throws Exception {
+    private void registerSubCommand(Class<? extends SubCommand> clazz) throws Exception {
         Constructor ctor = null;
-        PixelmonCommand cmd;
+        SubCommand cmd;
 
-        if (clazz.isAnnotationPresent(PluginRequired.class)) {
+        if (clazz.isAnnotationPresent(PluginDependent.class)) {
             ctor = clazz.getDeclaredConstructor(this.getClass());
             ctor.setAccessible(true);
-            cmd = (PixelmonCommand) ctor.newInstance(this);
+            cmd = (SubCommand) ctor.newInstance(this);
 
         } else {
-            cmd = (PixelmonCommand) clazz.newInstance();
+            cmd = (SubCommand) clazz.newInstance();
         }
 
         this.subCmds.add(cmd);
@@ -309,7 +306,7 @@ public final class GymManagement extends JavaPlugin implements Listener {
 
     public Badge getBadge(String badge_name) {
         for (Gym gym : GymManagement.getGyms()) {
-            if (gym.getBadge().getBadgeName().equalsIgnoreCase(badge_name)) {
+            if (gym.getBadge().getName().equalsIgnoreCase(badge_name)) {
                 return gym.getBadge();
             }
         }
@@ -441,7 +438,7 @@ public final class GymManagement extends JavaPlugin implements Listener {
                 if (oldLores.get(i).contains("{BADGE}")) {
 
                     tempLores.add(oldLores.get(i).replace("{BADGE}",
-                                        gym.getBadge().getBadgeName().toUpperCase()));
+                                        gym.getBadge().getName().toUpperCase()));
 
                 } else if (oldLores.get(i).contains("{STATUS}")) {
                     tempLores.add(oldLores.get(i).replace("{STATUS}",
@@ -480,6 +477,15 @@ public final class GymManagement extends JavaPlugin implements Listener {
         return null;
     }
 
+    public boolean isBadge(String s) {
+        for (Gym gym : gyms) {
+            if (gym.getBadge().getName().equalsIgnoreCase(s)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Gym getGym(String gymname) {
         for (Gym gym : gyms) {
             if (gym.getGymName().equalsIgnoreCase(gymname)) {
@@ -503,6 +509,9 @@ public final class GymManagement extends JavaPlugin implements Listener {
                             Bukkit.getPlayer(account.getHolderName()),
                             this.getBadgeSlots(), account.getHolderName() + "'s Badges");
         for (String badge_name : account.getBadges()) {
+            if (!this.isBadge(badge_name)) {
+                continue;
+            }
             ItemStack item = new ItemStack(this.getBadge(badge_name).getID());
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.RED + badge_name);

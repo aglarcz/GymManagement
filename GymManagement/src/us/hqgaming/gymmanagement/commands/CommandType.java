@@ -1,6 +1,3 @@
-/**
- *
- */
 package us.hqgaming.gymmanagement.commands;
 
 /**
@@ -18,5 +15,4 @@ public enum CommandType {
         }
         return null;
     }
-
 }

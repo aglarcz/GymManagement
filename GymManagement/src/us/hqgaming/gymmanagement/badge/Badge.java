@@ -26,7 +26,7 @@ public class Badge {
         return gymName;
     }
 
-    public String getBadgeName() {
+    public String getName() {
         return name;
     }
 }

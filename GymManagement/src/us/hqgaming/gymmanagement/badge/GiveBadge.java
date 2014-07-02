@@ -10,12 +10,12 @@ import org.bukkit.entity.Player;
 import us.hqgaming.gymmanagement.ChatManager;
 import us.hqgaming.gymmanagement.GymManagement;
 import us.hqgaming.gymmanagement.commands.CommandType;
-import us.hqgaming.gymmanagement.commands.PixelmonCommand;
-import us.hqgaming.gymmanagement.commands.PixelmonCommand.PluginRequired;
+import us.hqgaming.gymmanagement.commands.SubCommand;
+import us.hqgaming.gymmanagement.commands.SubCommand.PluginDependent;
 import us.hqgaming.gymmanagement.gym.Gym;
 
-@PluginRequired
-public class GiveBadge extends PixelmonCommand {
+@PluginDependent
+public class GiveBadge extends SubCommand {
 
     private final GymManagement plugin;
 
@@ -119,16 +119,16 @@ public class GiveBadge extends PixelmonCommand {
 
         ChatManager.messagePlayer(player, ChatColor.GREEN + "You have given "
                             + other.getName() + " the " + ChatColor.RED
-                            + badge.getBadgeName().toUpperCase() + ChatColor.GREEN
+                            + badge.getName().toUpperCase() + ChatColor.GREEN
                             + " badge!");
         ChatManager.messagePlayer(player, ChatColor.GREEN + player.getName()
                             + " has given you the " + ChatColor.RED
-                            + badge.getBadgeName().toUpperCase() + ChatColor.GREEN
+                            + badge.getName().toUpperCase() + ChatColor.GREEN
                             + " badge!");
         for (Player p : Bukkit.getOnlinePlayers()) {
             ChatManager.messagePlayer(p, "&e" + other.getName()
                                 + "&a has earned the " + ChatColor.RED
-                                + badge.getBadgeName().toUpperCase() + ChatColor.GREEN
+                                + badge.getName().toUpperCase() + ChatColor.GREEN
                                 + " badge!");
         }
 

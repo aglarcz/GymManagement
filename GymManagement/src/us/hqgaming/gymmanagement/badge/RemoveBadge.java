@@ -10,12 +10,12 @@ import org.bukkit.entity.Player;
 import us.hqgaming.gymmanagement.ChatManager;
 import us.hqgaming.gymmanagement.GymManagement;
 import us.hqgaming.gymmanagement.commands.CommandType;
-import us.hqgaming.gymmanagement.commands.PixelmonCommand;
-import us.hqgaming.gymmanagement.commands.PixelmonCommand.PluginRequired;
+import us.hqgaming.gymmanagement.commands.SubCommand;
+import us.hqgaming.gymmanagement.commands.SubCommand.PluginDependent;
 import us.hqgaming.gymmanagement.gym.Gym;
 
-@PluginRequired
-public class RemoveBadge extends PixelmonCommand {
+@PluginDependent
+public class RemoveBadge extends SubCommand {
 
     private final GymManagement plugin;
 
@@ -119,11 +119,11 @@ public class RemoveBadge extends PixelmonCommand {
 
         ChatManager.messagePlayer(player, ChatColor.GREEN + "You have removed "
                             + other.getName() + "'s " + ChatColor.RED
-                            + badge.getBadgeName().toUpperCase() + ChatColor.GREEN
+                            + badge.getName().toUpperCase() + ChatColor.GREEN
                             + " badge!");
         ChatManager.messagePlayer(player, ChatColor.GREEN + player.getName()
                             + " has removed your " + ChatColor.RED
-                            + badge.getBadgeName().toUpperCase() + ChatColor.GREEN
+                            + badge.getName().toUpperCase() + ChatColor.GREEN
                             + " badge!");
     }
 }

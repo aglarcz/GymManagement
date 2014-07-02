@@ -19,10 +19,10 @@ commands:
 permissions:
   gymmanagement.reload:
     default: op
-    description: Allows a player to see others badges
+    description: Reloads plugin
   gymmanagement.update:
     default: op
-    description: Allows a player to see others badges
+    description: Updates plugin
   gym.authority:
     default: op
     description: Allows a player to manipulate other gyms
