@@ -1,14 +1,17 @@
 name: GymManagement
-version: 1.5
+version: 1.6.2
 main: us.hqgaming.gymmanagement.GymManagement
 author: Xeno
 description: 
          A gym plugin made by Xeno from HQGaming.us
+
 commands:
   gymmanagement:
     description: Main command
     aliases: [gmanage, gmanagement, gymm]
   badges:
+    description: Displays badges
+  gymrules:
     description: Displays badges
   badge:
     description: Badge Commands
@@ -17,33 +20,57 @@ commands:
   gyms:
     description: Displays gyms
 permissions:
-  gymmanagement.reload:
-    default: op
-    description: Reloads plugin
-  gymmanagement.update:
-    default: op
-    description: Updates plugin
-  gym.authority:
-    default: op
-    description: Allows a player to manipulate other gyms
-  gym.open:
-    default: op
-    description: Allows a player to open their gym
-  gym.leaders:
-    default: op
-    description: Allows a player to see online gym leaders
-  gym.menu:
-    default: op
-    description: Allows a player to see gym menu
-  gym.close:
-    default: op
-    description: Allows a player to close their gym
-  badge.see:
-    default: op
-    description: Allows a player to see others badges
-  badge.remove:
-    default: op
-    description: Allows a player to remove others badges
-  badge.give:
-    default: op
-    description: Allows a player to give others badges
+# -------------------------------------------- #
+# NODES
+# -------------------------------------------- #
+  gym.access.menu: {description: Permission to gym menu, default: op}
+  gym.admin.reload: {description: Reloads plugin, default: op}
+  gym.admin.update: {description: Updates plugin, default: op}
+  gym.admin.sethome: {description: Permission to set gym home, default: op}
+  gym.admin.deletehome: {description: Permission to delete gym home, default: op}
+  gym.admin.addleader: {description: Permission to add a gym leader to a gym, default: op}
+  gym.admin.removeleader: {description: Permission to remove a gym leader from a gym, default: op}
+  gym.commands.statistics: {description: Permission to view gym statistics, default: op}
+  gym.commands.open: {description: Permission to open gym, default: op}
+  gym.commands.hold: {description: Permission to hold gym, default: op}
+  gym.commands.close: {description: Permission to close gym, default: op}
+  gym.commands.leaders: {description: Permission to view online gym leaders, default: op}
+  gym.commands.home: {description: Permission to teleport to gym home, default: op}
+  badge.commands.give: {description: Permission to teleport to give badges, default: op}
+  badge.commands.remove: {description: Permission to teleport to remove badges, default: op}
+  badge.commands.see: {description: Permission to teleport to see badges, default: op}
+# -------------------------------------------- #
+# PRESETS
+# -------------------------------------------- #
+  gym.access.*:
+     default: op
+     description: Gives access to all Gym Management plugin commands
+     children:
+       gym.access.menu: true
+       gym.access.leader: true
+       gym.access.user: true
+       gym.admin.reload: true
+       gym.admin.update: true
+       gym.admin.addleader: true
+       gym.admin.removeleader: true
+       gym.admin.sethome: true
+       gym.admin.deletehome: true
+  gym.access.leader:
+     default: op
+     description: Gives access to all Gym leader commands
+     children:
+       gym.commands.open: true
+       gym.commands.close: true
+       gym.commands.hold: true
+       gym.commands.home: true
+       badge.commands.give: true
+       badge.commands.remove: true
+       badge.commands.see: true
+       gym.access.user: true
+  gym.access.user:
+     default: op
+     description: Gives access to all Gym user commands
+     children:
+       gym.access.menu: true
+       gym.commands.statistics: true
+       gym.commands.leaders: true

@@ -1,29 +1,47 @@
-# Website: http://www.HQGaming.us #
-Chat-Prefix: "&7[&cHQ&fGaming&7] "
-Gym-Slots: 9 # /gyms max slots #
-Badge-Slots: 9 # /badges max slots #
-Config-Version: 3 # DO NOT CHANGE IF YOU WANT TO LIVE #
-Update-Check: true
+# +----------------------------------------------------+ #
+# <               Gym Management v1.6.3                > #
+# <              And highly customizable               > #
+# <                  www.hqgaming.us                   > #
+# +----------------------------------------------------+ #
+
+# General Plugin Configuration #
+
+Prefix: "&7[&cHQ&fGaming&7] "
+Gym-Size: 9 # /gyms max slots #
+Badge-Size: 9 # /badges max slots #
+Configuration: 7 # DO NOT CHANGE IF YOU WANT TO LIVE #
+Graphical-User-Interface: true # USE /GYMS MENU (PREVENTS STRESS) #
+Automatic-Updates: true
+
+# Configure your gym! #
+# To create a gym copy and paste one of these gyms and fill them with your desires #
+# If you are updating your configuration from an old one make sure you still use this template #
+# Video/Creation command tutorial coming soon #
+
 Gyms:
      Example:
        Gym-Name: '&7&lExample Gym' # Will be shown on login message and /gyms #
        Badge-Name: 'Example' # Badge name #
-       On-Item-Click-Command-Name: 'warp example' # Player performs this command on item click in /gyms #
-       Run-On-Click-Command-If-Gym-Closed: true # Will the command on item click command run if the gym is closed? #
+       Command: 'warp example' # Player performs this command on item click in /gyms, Use 'none' for no command #
+       Command-Closed: true # Will the command on item click command run if the gym is closed? #
        Gym-Item: 2 # Gym item id in /gyms #
-       Badge-Item: 21 # Gym item id #
+       Badge-Item: 21 # Badge item id #
        Item-Lore: # Item lore list in /gyms #
        - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a10&9-&a20'
        - '&cBadge: &a{BADGE}'
+       - '&cLevel Cap: &a10&9-&a20'
+       - '&cOnline Leaders: &a{ONLINE}'
      Test:
-       Gym-Name: '&a&lTest Gym' # Will be shown on login message and /gyms #
+       Gym-Name: '&f&lTest Gym' # Will be shown on login message and /gyms #
        Badge-Name: 'Test' # Badge name #
-       On-Item-Click-Command-Name: 'warp testgym' # Player performs this command on item click in /gyms #
-       Run-On-Click-Command-If-Gym-Closed: true # Will the command on item click command run if the gym is closed? #
+       Command: 'warp testgym' # Player performs this command on item click in /gyms,  Use 'none' for no command  #
+       Command-Closed: true # Will the command on item click command run if the gym is closed? #
        Gym-Item: 3 # Gym item id in /gyms #
-       Badge-Item: 98 # Gym item id #
+       Badge-Item: 98 # Badge item id #
        Item-Lore: # Item lore list in /gyms #
        - '&cStatus: {STATUS}'
-       - '&cLevel Cap: &a10&9-&a20'
        - '&cBadge: &a{BADGE}'
+       - '&cLevel Cap: &a20&9-&a30'
+       - '&cOnline Leaders: &a{ONLINE}'
+
+# Copyright © 2014 XenoJava.com #

@@ -1,9 +1,5 @@
 package us.hqgaming.gymmanagement.commands;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import org.bukkit.command.CommandSender;
 
 public abstract class SubCommand {
@@ -29,7 +25,5 @@ public abstract class SubCommand {
         return commandType;
     }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(value = ElementType.TYPE)
-    public @interface PluginDependent {}
+
 }
