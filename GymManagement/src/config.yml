@@ -1,5 +1,5 @@
 # +----------------------------------------------------+ #
-# <               Gym Management v1.6.3                > #
+# <               Gym Management v1.6.1                > #
 # <              And highly customizable               > #
 # <                  www.hqgaming.us                   > #
 # +----------------------------------------------------+ #
@@ -9,7 +9,7 @@
 Prefix: "&7[&cHQ&fGaming&7] "
 Gym-Size: 9 # /gyms max slots #
 Badge-Size: 9 # /badges max slots #
-Configuration: 7 # DO NOT CHANGE IF YOU WANT TO LIVE #
+Configuration: 6 # DO NOT CHANGE IF YOU WANT TO LIVE #
 Graphical-User-Interface: true # USE /GYMS MENU (PREVENTS STRESS) #
 Automatic-Updates: true
 
@@ -25,7 +25,7 @@ Gyms:
        Command: 'warp example' # Player performs this command on item click in /gyms, Use 'none' for no command #
        Command-Closed: true # Will the command on item click command run if the gym is closed? #
        Gym-Item: 2 # Gym item id in /gyms #
-       Badge-Item: 21 # Badge item id #
+       Badge-Item: 21 # Gym item id #
        Item-Lore: # Item lore list in /gyms #
        - '&cStatus: {STATUS}'
        - '&cBadge: &a{BADGE}'
@@ -37,7 +37,7 @@ Gyms:
        Command: 'warp testgym' # Player performs this command on item click in /gyms,  Use 'none' for no command  #
        Command-Closed: true # Will the command on item click command run if the gym is closed? #
        Gym-Item: 3 # Gym item id in /gyms #
-       Badge-Item: 98 # Badge item id #
+       Badge-Item: 98 # Gym item id #
        Item-Lore: # Item lore list in /gyms #
        - '&cStatus: {STATUS}'
        - '&cBadge: &a{BADGE}'
